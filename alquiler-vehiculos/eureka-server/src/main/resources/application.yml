@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: eureka-server   # Nombre oficial del servicio (usado en Eureka y logs)
+
+server:
+  port: 8761              # Puerto estándar de Eureka
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # Modo standalone: el servidor no intenta registrarse ni buscar peers
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    # Desactiva el modo de "auto-preservación" en desarrollo local
+    # (en producción se activa para tolerar pérdidas de red temporales)
+    enable-self-preservation: false
+    eviction-interval-timer-in-ms: 5000   # Revisa leases caducadas cada 5 s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.netflix.eureka: WARN
+    com.netflix.discovery: WARN

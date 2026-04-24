@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ================================================================
+         Parent: Spring Boot BOM (importado como parent oficial)
+         Compatible: Boot 3.3.x  →  Spring Cloud 2023.0.x (Leyton)
+         Java: 17
+    ================================================================ -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.6</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.alquiler</groupId>
+    <artifactId>alquiler-vehiculos</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>alquiler-vehiculos</name>
+    <description>Sistema de alquiler de vehículos — microservicios UNIR PER-15710</description>
+
+    <!-- ================================================================
+         Módulos (se agregan lote a lote)
+    ================================================================ -->
+    <modules>
+        <module>eureka-server</module>
+        <module>vehiculos-service</module>
+        <!-- lote 4: <module>operaciones-service</module> -->
+        <!-- lote 7: <module>api-gateway</module>         -->
+    </modules>
+
+    <!-- ================================================================
+         Propiedades globales
+    ================================================================ -->
+    <properties>
+        <java.version>17</java.version>
+        <spring-cloud.version>2023.0.4</spring-cloud.version>
+        <!-- Versión centralizada de springdoc (usada por servicios con BD) -->
+        <springdoc.version>2.6.0</springdoc.version>
+    </properties>
+
+    <!-- ================================================================
+         Dependency Management — BOM de Spring Cloud
+         Evita que cada módulo fije versiones de artefactos Cloud
+    ================================================================ -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- ================================================================
+         Build plugins heredados por todos los módulos
+    ================================================================ -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

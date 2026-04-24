@@ -1,0 +1,49 @@
+# ================================================================
+# META — planificación, agents y docs de progreso (no van en la entrega)
+# ================================================================
+_meta/
+
+# Configuración de Cursor IDE (copia funcional en alquiler-vehiculos/)
+alquiler-vehiculos/.cursor/
+
+# ================================================================
+# Java / Maven
+# ================================================================
+target/
+*.class
+# No ignorar *.jar globalmente: el Maven Wrapper usa .mvn/wrapper/maven-wrapper.jar (sí se versiona).
+*.war
+*.ear
+*.nar
+
+# ================================================================
+# Spring Boot
+# ================================================================
+*.log
+spring.log
+
+# ================================================================
+# Bases de datos / credenciales locales
+# ================================================================
+.env
+.env.local
+*.env
+alquiler-vehiculos/scripts/.env.local
+
+# ================================================================
+# IDEs
+# ================================================================
+.idea/
+*.iml
+.vscode/
+*.code-workspace
+.project
+.classpath
+.settings/
+
+# ================================================================
+# Sistema operativo
+# ================================================================
+.DS_Store
+Thumbs.db
+desktop.ini

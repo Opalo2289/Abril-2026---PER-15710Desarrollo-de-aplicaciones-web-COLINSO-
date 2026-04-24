@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "description": "Registro de comandos del proyecto. Añade entradas aquí y vuelven a aparecer con run.ps1 -List / ./run.sh list",
+  "commands": [
+    {
+      "id": "eureka-up",
+      "title": "Arrancar Eureka Server (desarrollo)",
+      "cwd": "..",
+      "windows": {
+        "program": "mvnw.cmd",
+        "args": ["-pl", "eureka-server", "spring-boot:run"]
+      },
+      "unix": {
+        "program": "./mvnw",
+        "args": ["-pl", "eureka-server", "spring-boot:run"]
+      }
+    },
+    {
+      "id": "compile-all",
+      "title": "Compilar todo el multi-módulo (sin tests)",
+      "cwd": "..",
+      "windows": {
+        "program": "mvnw.cmd",
+        "args": ["-q", "-DskipTests", "package"]
+      },
+      "unix": {
+        "program": "./mvnw",
+        "args": ["-q", "-DskipTests", "package"]
+      }
+    },
+    {
+      "id": "vehiculos-up",
+      "title": "Arrancar vehiculos-service (desarrollo, requiere PostgreSQL)",
+      "cwd": "..",
+      "windows": {
+        "program": "mvnw.cmd",
+        "args": ["-pl", "vehiculos-service", "spring-boot:run"]
+      },
+      "unix": {
+        "program": "./mvnw",
+        "args": ["-pl", "vehiculos-service", "spring-boot:run"]
+      }
+    },
+    {
+      "id": "compile-vehiculos",
+      "title": "Compilar y test del módulo vehiculos-service",
+      "cwd": "..",
+      "windows": {
+        "program": "mvnw.cmd",
+        "args": ["-pl", "vehiculos-service", "test"]
+      },
+      "unix": {
+        "program": "./mvnw",
+        "args": ["-pl", "vehiculos-service", "test"]
+      }
+    },
+    {
+      "id": "compile-eureka",
+      "title": "Compilar solo el módulo eureka-server",
+      "cwd": "..",
+      "windows": {
+        "program": "mvnw.cmd",
+        "args": ["-pl", "eureka-server", "-q", "-DskipTests", "package"]
+      },
+      "unix": {
+        "program": "./mvnw",
+        "args": ["-pl", "eureka-server", "-q", "-DskipTests", "package"]
+      }
+    },
+    {
+      "id": "verify-versions",
+      "title": "Mostrar versiones de Java y Maven (wrapper)",
+      "cwd": "..",
+      "windows": {
+        "program": "mvnw.cmd",
+        "args": ["-v"]
+      },
+      "unix": {
+        "program": "./mvnw",
+        "args": ["-v"]
+      }
+    }
+  ]
+}
