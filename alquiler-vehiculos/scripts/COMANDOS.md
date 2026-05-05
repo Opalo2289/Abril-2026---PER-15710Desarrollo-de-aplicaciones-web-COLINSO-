@@ -21,6 +21,7 @@ Todo lo repetible vive en **`registry.json`**. Los scripts **`run.ps1`** (Window
 ```powershell
 .\scripts\run.ps1 -List
 .\scripts\run.ps1 -Id eureka-up
+.\scripts\run.ps1 -Id vehiculos-up
 ```
 
 ### Git Bash
@@ -29,24 +30,44 @@ Todo lo repetible vive en **`registry.json`**. Los scripts **`run.ps1`** (Window
 chmod +x scripts/run.sh   # solo la primera vez
 ./scripts/run.sh list
 ./scripts/run.sh eureka-up
+./scripts/run.sh vehiculos-up
 ```
 
-### Sin scripts (equivalente directo)
+## Levantar Eureka y vehiculos-service (desarrollo)
 
-Desde `alquiler-vehiculos/`:
+Son **dos procesos** distintos; abre **dos terminales** (o una en segundo plano) desde la raíz **`alquiler-vehiculos/`**.
+
+| Orden | Servicio | Puerto | Comando (recomendado, carga `scripts/.env.local`) |
+|-------|-----------|--------|---------------------------------------------------|
+| 1 | **Eureka** | **8761** | `.\scripts\run.ps1 -Id eureka-up` o `./scripts/run.sh eureka-up` |
+| 2 | **vehiculos-service** | **8081** | `.\scripts\run.ps1 -Id vehiculos-up` o `./scripts/run.sh vehiculos-up` |
+
+**vehiculos-service** necesita base de datos (PostgreSQL local con BD `vehiculos` o **Neon** vía `SPRING_DATASOURCE_*` en `scripts/.env.local`). En **Windows**, si `mvnw.cmd` pide Java, define también **`JAVA_HOME`** en ese mismo archivo (ver `env.local.example`).
+
+**URLs útiles:** `http://localhost:8761` (panel Eureka; con ambos servicios arriba debe aparecer la instancia **VEHICULOS-SERVICE**), `http://localhost:8081/swagger-ui.html` (API vehículos), `http://localhost:8081/actuator/health`.
+
+Si **vehiculos-service** arranca **sin** Eureka en marcha, verás errores de conexión en el log hasta que levantes Eureka o desactives el cliente con variables propias; en desarrollo normal levanta primero Eureka y luego vehículos.
+
+### Sin scripts (`mvnw` directo)
+
+Misma carpeta `alquiler-vehiculos/`. En Windows conviene tener `JAVA_HOME` y las variables de BD en el entorno **antes** de ejecutar (o usa `run.ps1`, que lee `.env.local`):
 
 ```bash
 ./mvnw -pl eureka-server spring-boot:run
+```
+
+```bash
+./mvnw -pl vehiculos-service spring-boot:run
 ```
 
 ## Comandos registrados (resumen)
 
 | ID | Qué hace |
 |----|------------|
-| `eureka-up` | Arranca Eureka en el puerto **8761** (`http://localhost:8761`). |
+| `eureka-up` | Arranca **eureka-server** en el puerto **8761** (`http://localhost:8761`). |
 | `compile-all` | Empaqueta todo el multi-módulo sin ejecutar tests. |
 | `compile-eureka` | Compila solo `eureka-server`. |
-| `vehiculos-up` | Arranca **vehiculos-service** en el puerto **8081** (necesita PostgreSQL y BD `vehiculos` o URL en env). |
+| `vehiculos-up` | Arranca **vehiculos-service** en el puerto **8081** (BD: local o Neon vía `scripts/.env.local`; en Windows suele hacer falta `JAVA_HOME` ahí). |
 | `compile-vehiculos` | Compila y ejecuta tests de `vehiculos-service` (H2 en perfil `test`). |
 | `verify-versions` | Muestra `mvnw -v` (Java + Maven del wrapper). |
 
@@ -57,4 +78,30 @@ Desde `alquiler-vehiculos/`:
 3. Comprueba con `run.ps1 -List` o `./scripts/run.sh list`.
 4. Opcional: anota una línea en esta tabla para tu equipo.
 
-Cuando existan más módulos (`vehiculos-service`, `operaciones-service`, etc.), añade aquí entradas como `vehiculos-up` apuntando a `-pl vehiculos-service spring-boot:run`.
+Para **operaciones-service** u otros módulos futuros, añade entradas en `registry.json` y una fila en la tabla de arriba.
+
+## Neon (u otro PostgreSQL en la nube)
+
+**No pegues la cadena `postgresql://...` con contraseña en este repo** (ni en `COMANDOS.md`): usa solo **`scripts/.env.local`**, que está en `.gitignore`.
+
+Neon te da un URI tipo `postgresql://USUARIO:CONTRASEÑA@HOST/neondb?sslmode=require&...`. Para Spring Boot debes **partirlo en tres variables** (equivalente a lo que lee [`vehiculos-service/.../application.yml`](../vehiculos-service/src/main/resources/application.yml)):
+
+| Parte del URI de Neon | Variable Spring |
+|------------------------|-----------------|
+| Host (ej. `ep-xxxx-pooler.c-5.us-east-1.aws.neon.tech`) y ruta `/neondb` | `SPRING_DATASOURCE_URL` en formato **JDBC** |
+| Usuario (antes del `@`) | `SPRING_DATASOURCE_USERNAME` |
+| Contraseña | `SPRING_DATASOURCE_PASSWORD` |
+
+Ejemplo en **`scripts/.env.local`** (formato `KEY=valor`, una por línea; **sin** `export`: así lo lee `run.ps1` y Git Bash al delegar). Sustituye host, usuario y contraseña:
+
+```text
+SPRING_DATASOURCE_URL=jdbc:postgresql://HOST:5432/neondb?sslmode=require
+SPRING_DATASOURCE_USERNAME=tu_usuario_neon
+SPRING_DATASOURCE_PASSWORD=tu_contraseña_neon
+```
+
+En Linux/macOS, si ejecutas `mvnw` a mano sin `run.ps1`, puedes `export` las mismas variables en tu shell o usar `set -a; source .env.local`.
+
+El **host** es el segmento entre `@` y la siguiente `/` en el URI de Neon (sin `postgresql://` ni usuario/contraseña). El nombre de la base suele ser `neondb` u otra que elijas en el panel.
+
+Si esa contraseña llegó a guardarse en un archivo versionado, **rótala** en [Neon Console](https://console.neon.tech) y actualiza solo `.env.local`.

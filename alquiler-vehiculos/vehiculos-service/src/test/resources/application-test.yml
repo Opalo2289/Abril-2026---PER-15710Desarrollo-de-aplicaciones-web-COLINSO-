@@ -1,3 +1,8 @@
+# Tests sin servidor Eureka: evita intentos de registro en CI / mvn test.
+eureka:
+  client:
+    enabled: false
+
 spring:
   datasource:
     url: jdbc:h2:mem:vehiculos;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE

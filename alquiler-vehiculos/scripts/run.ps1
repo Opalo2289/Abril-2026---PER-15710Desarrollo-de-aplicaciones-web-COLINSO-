@@ -19,13 +19,20 @@ $RegistryPath = Join-Path $ScriptDir 'registry.json'
 function Import-DotEnvLocal {
     $envFile = Join-Path $ScriptDir '.env.local'
     if (-not (Test-Path $envFile)) { return }
-    Get-Content $envFile | ForEach-Object {
+    Get-Content $envFile -Encoding UTF8 | ForEach-Object {
         $line = $_.Trim()
         if ($line -eq '' -or $line.StartsWith('#')) { return }
         $idx = $line.IndexOf('=')
         if ($idx -lt 1) { return }
         $name = $line.Substring(0, $idx).Trim()
         $value = $line.Substring($idx + 1).Trim()
+        if ($value.Length -ge 2) {
+            $q0 = $value[0]
+            $q1 = $value[$value.Length - 1]
+            if (($q0 -eq '"' -and $q1 -eq '"') -or ($q0 -eq "'" -and $q1 -eq "'")) {
+                $value = $value.Substring(1, $value.Length - 2)
+            }
+        }
         Set-Item -Path "Env:$name" -Value $value
     }
 }
