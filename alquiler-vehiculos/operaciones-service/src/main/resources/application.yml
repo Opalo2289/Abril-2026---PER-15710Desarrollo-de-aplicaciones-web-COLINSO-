@@ -17,6 +17,18 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connect-timeout: 2000
+            read-timeout: 5000
+            logger-level: basic
+
+vehiculos:
+  client:
+    url: ${VEHICULOS_CLIENT_URL:http://localhost:8081}
 
 springdoc:
   api-docs:

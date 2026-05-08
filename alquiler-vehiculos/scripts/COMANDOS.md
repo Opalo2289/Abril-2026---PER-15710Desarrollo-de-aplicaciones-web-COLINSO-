@@ -33,9 +33,11 @@ chmod +x scripts/run.sh   # solo la primera vez
 ./scripts/run.sh vehiculos-up
 ```
 
-## Levantar Eureka y vehiculos-service (desarrollo)
+## Levantar Eureka, vehiculos-service y operaciones-service (desarrollo)
 
-Son **dos procesos** distintos; abre **dos terminales** (o una en segundo plano) desde la raíz **`alquiler-vehiculos/`**.
+Son **tres procesos** distintos desde el lote 5; abre **tres terminales** desde la raíz **`alquiler-vehiculos/`**.
+
+> **Lote 5 — orden obligatorio:** `operaciones-service` consulta el estado del vehículo en `vehiculos-service` al registrar cada solicitud. Debes levantarlos en este orden: **Eureka → vehículos → operaciones**. Si `vehiculos-service` no está disponible cuando se registra una solicitud, recibirás un error 500. La URL se controla con `VEHICULOS_CLIENT_URL` (por defecto `http://localhost:8081`); ver `env.local.example`.
 
 | Orden | Servicio | Puerto | Comando (recomendado, carga `scripts/.env.local`) |
 |-------|-----------|--------|---------------------------------------------------|
