@@ -131,6 +131,32 @@
         "program": "./mvnw",
         "args": ["-v"]
       }
+    },
+    {
+      "id": "compose-up",
+      "title": "Levantar stack Docker (build + detached)",
+      "cwd": "..",
+      "windows": {
+        "program": "docker",
+        "args": ["compose", "up", "--build", "-d"]
+      },
+      "unix": {
+        "program": "docker",
+        "args": ["compose", "up", "--build", "-d"]
+      }
+    },
+    {
+      "id": "compose-down",
+      "title": "Detener stack Docker y eliminar contenedores",
+      "cwd": "..",
+      "windows": {
+        "program": "docker",
+        "args": ["compose", "down"]
+      },
+      "unix": {
+        "program": "docker",
+        "args": ["compose", "down"]
+      }
     }
   ]
 }

@@ -1,0 +1,8 @@
+.git
+.idea
+.vscode
+**/.DS_Store
+**/node_modules
+**/target
+hs_err_pid*.log
+replay_pid*.log

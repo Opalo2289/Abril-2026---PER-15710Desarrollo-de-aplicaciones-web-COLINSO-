@@ -1,0 +1,136 @@
+services:
+  postgres-vehiculos:
+    image: postgres:16-alpine
+    container_name: postgres-vehiculos
+    environment:
+      POSTGRES_DB: ${POSTGRES_VEHICULOS_DB:-vehiculos}
+      POSTGRES_USER: ${POSTGRES_VEHICULOS_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_VEHICULOS_PASSWORD:-postgres}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-vehiculos-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_VEHICULOS_USER:-postgres} -d ${POSTGRES_VEHICULOS_DB:-vehiculos}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  postgres-operaciones:
+    image: postgres:16-alpine
+    container_name: postgres-operaciones
+    environment:
+      POSTGRES_DB: ${POSTGRES_OPERACIONES_DB:-operaciones}
+      POSTGRES_USER: ${POSTGRES_OPERACIONES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_OPERACIONES_PASSWORD:-postgres}
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-operaciones-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_OPERACIONES_USER:-postgres} -d ${POSTGRES_OPERACIONES_DB:-operaciones}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  eureka-server:
+    build:
+      context: .
+      dockerfile: eureka-server/Dockerfile
+    container_name: eureka-server
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_INSTANCE_HOSTNAME: eureka-server
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://localhost:8761/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  vehiculos-service:
+    build:
+      context: .
+      dockerfile: vehiculos-service/Dockerfile
+    container_name: vehiculos-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_INSTANCE_HOSTNAME: vehiculos-service
+      VEHICULOS_DATASOURCE_URL: jdbc:postgresql://postgres-vehiculos:5432/${POSTGRES_VEHICULOS_DB:-vehiculos}
+      VEHICULOS_DATASOURCE_USERNAME: ${POSTGRES_VEHICULOS_USER:-postgres}
+      VEHICULOS_DATASOURCE_PASSWORD: ${POSTGRES_VEHICULOS_PASSWORD:-postgres}
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres-vehiculos:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://localhost:8081/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+  operaciones-service:
+    build:
+      context: .
+      dockerfile: operaciones-service/Dockerfile
+    container_name: operaciones-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_INSTANCE_HOSTNAME: operaciones-service
+      OPERACIONES_DATASOURCE_URL: jdbc:postgresql://postgres-operaciones:5432/${POSTGRES_OPERACIONES_DB:-operaciones}
+      OPERACIONES_DATASOURCE_USERNAME: ${POSTGRES_OPERACIONES_USER:-postgres}
+      OPERACIONES_DATASOURCE_PASSWORD: ${POSTGRES_OPERACIONES_PASSWORD:-postgres}
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres-operaciones:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      vehiculos-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://localhost:8082/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    container_name: api-gateway
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      EUREKA_INSTANCE_HOSTNAME: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      vehiculos-service:
+        condition: service_healthy
+      operaciones-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+volumes:
+  postgres-vehiculos-data:
+  postgres-operaciones-data:

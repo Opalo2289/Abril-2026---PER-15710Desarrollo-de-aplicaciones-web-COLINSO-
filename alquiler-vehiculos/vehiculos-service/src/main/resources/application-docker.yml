@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: ${VEHICULOS_DATASOURCE_URL:jdbc:postgresql://postgres-vehiculos:5432/vehiculos}
+    username: ${VEHICULOS_DATASOURCE_USERNAME:postgres}
+    password: ${VEHICULOS_DATASOURCE_PASSWORD:postgres}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://eureka-server:8761/eureka/}
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:vehiculos-service}
+    prefer-ip-address: false

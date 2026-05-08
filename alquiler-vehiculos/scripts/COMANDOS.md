@@ -106,6 +106,57 @@ Misma carpeta `alquiler-vehiculos/`. En Windows conviene tener `JAVA_HOME` y las
 
 **Fallo típico:** Gateway antes que Eureka o sin instancias registradas → errores 503/502 o resolución `lb://` vacía.
 
+## Docker Compose (lote 8)
+
+El lote 8 agrega `Dockerfile` por microservicio, perfiles `docker` (`application-docker.yml`) y `docker-compose.yml` en la raíz `alquiler-vehiculos/`.
+
+### Arranque rápido (desde `alquiler-vehiculos/`)
+
+```bash
+docker compose up --build -d
+```
+
+```bash
+docker compose ps
+```
+
+```bash
+docker compose logs -f api-gateway
+```
+
+### Parada y limpieza
+
+```bash
+docker compose down
+```
+
+```bash
+docker compose down -v
+```
+
+### Servicios, puertos y variables clave
+
+- **PostgreSQL vehículos:** servicio `postgres-vehiculos`, puerto host `5433` → contenedor `5432`.
+- **PostgreSQL operaciones:** servicio `postgres-operaciones`, puerto host `5434` → contenedor `5432`.
+- **Eureka:** `http://localhost:8761` (servicio `eureka-server`).
+- **MS y Gateway:** `http://localhost:8081`, `http://localhost:8082`, `http://localhost:8080`.
+- Compose activa `SPRING_PROFILES_ACTIVE=docker` en los cuatro servicios Spring.
+- Compose inyecta:
+  - `EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/`
+  - `VEHICULOS_DATASOURCE_*` apuntando a `postgres-vehiculos`
+  - `OPERACIONES_DATASOURCE_*` apuntando a `postgres-operaciones`
+
+Puedes sobrescribir defaults desde variables de tu shell (ej. `POSTGRES_VEHICULOS_PASSWORD`, `POSTGRES_OPERACIONES_PASSWORD`) antes de `docker compose up`.
+
+### Smoke test del lote 8 (vía Gateway)
+
+1. `docker compose up --build -d`.
+2. Esperar `healthy` en `docker compose ps` para `eureka-server`, `vehiculos-service`, `operaciones-service`, `api-gateway`.
+3. Comprobar Eureka: `http://localhost:8761` (instancias `API-GATEWAY`, `VEHICULOS-SERVICE`, `OPERACIONES-SERVICE`).
+4. Verificar Gateway:
+   - `GET http://localhost:8080/vehiculos`
+   - `GET http://localhost:8080/operaciones/solicitudes`
+
 ## Comandos registrados (resumen)
 
 | ID | Qué hace |
@@ -120,6 +171,8 @@ Misma carpeta `alquiler-vehiculos/`. En Windows conviene tener `JAVA_HOME` y las
 | `gateway-up` | Arranca **api-gateway** en el puerto **8080** (requiere Eureka + MS registrados). |
 | `compile-gateway` | Compila y ejecuta tests de `api-gateway` (perfil `test`, Gateway desactivado en test). |
 | `verify-versions` | Muestra `mvnw -v` (Java + Maven del wrapper). |
+| `compose-up` | Construye imágenes y levanta el stack Docker completo en segundo plano. |
+| `compose-down` | Detiene el stack Docker de `docker-compose.yml`. |
 
 ## Cómo añadir un comando nuevo
 

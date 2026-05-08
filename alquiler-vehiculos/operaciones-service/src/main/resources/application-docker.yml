@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: ${OPERACIONES_DATASOURCE_URL:jdbc:postgresql://postgres-operaciones:5432/operaciones}
+    username: ${OPERACIONES_DATASOURCE_USERNAME:postgres}
+    password: ${OPERACIONES_DATASOURCE_PASSWORD:postgres}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://eureka-server:8761/eureka/}
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:operaciones-service}
+    prefer-ip-address: false
