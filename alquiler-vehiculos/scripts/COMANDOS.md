@@ -37,7 +37,7 @@ chmod +x scripts/run.sh   # solo la primera vez
 
 Son **tres procesos** distintos desde el lote 5; abre **tres terminales** desde la raíz **`alquiler-vehiculos/`**.
 
-> **Lote 5 — orden obligatorio:** `operaciones-service` consulta el estado del vehículo en `vehiculos-service` al registrar cada solicitud. Debes levantarlos en este orden: **Eureka → vehículos → operaciones**. Si `vehiculos-service` no está disponible cuando se registra una solicitud, recibirás un error 500. La URL se controla con `VEHICULOS_CLIENT_URL` (por defecto `http://localhost:8081`); ver `env.local.example`.
+> **Lote 6 — orden obligatorio:** `operaciones-service` se registra en **Eureka** y descubre `vehiculos-service` por nombre vía Spring Cloud LoadBalancer (sin URL fija). Debes levantarlos en este orden: **Eureka → vehículos → operaciones**. Si Eureka no está disponible al arrancar alguno de los MS, verás errores de registro en el log; en el panel `http://localhost:8761` deben aparecer **ambas** instancias (**VEHICULOS-SERVICE** y **OPERACIONES-SERVICE**). La variable `VEHICULOS_CLIENT_URL` ya no aplica.
 
 | Orden | Servicio | Puerto | Comando (recomendado, carga `scripts/.env.local`) |
 |-------|-----------|--------|---------------------------------------------------|

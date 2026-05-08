@@ -7,11 +7,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * Cliente Feign hacia {@code vehiculos-service}.
- * <p>Lote 5: URL fija {@code vehiculos.client.url} (por defecto {@code http://localhost:8081}).
- * Lote 6: se elimina el atributo {@code url} y Feign resuelve el nombre
- * {@code vehiculos-service} vía Eureka + LoadBalancer.</p>
+ * <p>Lote 6: Feign resuelve el nombre {@code vehiculos-service} vía Eureka + Spring Cloud LoadBalancer.
+ * Sin atributo {@code url}: la instancia se descubre en el registro de Eureka en tiempo de ejecución.</p>
  */
-@FeignClient(name = "vehiculos-service", url = "${vehiculos.client.url:http://localhost:8081}")
+@FeignClient(name = "vehiculos-service")
 public interface VehiculoCatalogoClient {
 
     @GetMapping("/api/vehiculos/{id}")
