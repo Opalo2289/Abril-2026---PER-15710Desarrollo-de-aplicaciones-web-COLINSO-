@@ -55,6 +55,32 @@
       }
     },
     {
+      "id": "gateway-up",
+      "title": "Arrancar api-gateway (desarrollo, requiere Eureka + MS registrados)",
+      "cwd": "..",
+      "windows": {
+        "program": "mvnw.cmd",
+        "args": ["-pl", "api-gateway", "spring-boot:run"]
+      },
+      "unix": {
+        "program": "./mvnw",
+        "args": ["-pl", "api-gateway", "spring-boot:run"]
+      }
+    },
+    {
+      "id": "compile-gateway",
+      "title": "Compilar y test del módulo api-gateway",
+      "cwd": "..",
+      "windows": {
+        "program": "mvnw.cmd",
+        "args": ["-pl", "api-gateway", "test"]
+      },
+      "unix": {
+        "program": "./mvnw",
+        "args": ["-pl", "api-gateway", "test"]
+      }
+    },
+    {
       "id": "compile-operaciones",
       "title": "Compilar y test del módulo operaciones-service",
       "cwd": "..",

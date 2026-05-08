@@ -33,21 +33,26 @@ chmod +x scripts/run.sh   # solo la primera vez
 ./scripts/run.sh vehiculos-up
 ```
 
-## Levantar Eureka, vehiculos-service y operaciones-service (desarrollo)
+## Levantar Eureka, microservicios y API Gateway (desarrollo)
 
-Son **tres procesos** distintos desde el lote 5; abre **tres terminales** desde la raíz **`alquiler-vehiculos/`**.
+Son **cuatro procesos** distintos desde el lote 7; abre **cuatro terminales** desde la raíz **`alquiler-vehiculos/`**.
 
-> **Lote 6 — orden obligatorio:** `operaciones-service` se registra en **Eureka** y descubre `vehiculos-service` por nombre vía Spring Cloud LoadBalancer (sin URL fija). Debes levantarlos en este orden: **Eureka → vehículos → operaciones**. Si Eureka no está disponible al arrancar alguno de los MS, verás errores de registro en el log; en el panel `http://localhost:8761` deben aparecer **ambas** instancias (**VEHICULOS-SERVICE** y **OPERACIONES-SERVICE**). La variable `VEHICULOS_CLIENT_URL` ya no aplica.
+> **Lote 6 — orden obligatorio (microservicios):** `operaciones-service` se registra en **Eureka** y descubre `vehiculos-service` por nombre vía Spring Cloud LoadBalancer (sin URL fija). Debes levantar **Eureka → vehículos → operaciones** antes del Gateway.
+
+> **Lote 7 — API Gateway:** Tras tener **VEHICULOS-SERVICE** y **OPERACIONES-SERVICE** visibles en `http://localhost:8761`, arranca **api-gateway** (puerto **8080**). El cliente externo puede usar solo `http://localhost:8080/vehiculos/...` y `http://localhost:8080/operaciones/...`; el Gateway reescribe internamente a `/api/vehiculos/...` y `/api/operaciones/...`. **Swagger UI** sigue en los puertos **8081** y **8082** de cada microservicio.
 
 | Orden | Servicio | Puerto | Comando (recomendado, carga `scripts/.env.local`) |
 |-------|-----------|--------|---------------------------------------------------|
 | 1 | **Eureka** | **8761** | `.\scripts\run.ps1 -Id eureka-up` o `./scripts/run.sh eureka-up` |
 | 2 | **vehiculos-service** | **8081** | `.\scripts\run.ps1 -Id vehiculos-up` o `./scripts/run.sh vehiculos-up` |
 | 3 | **operaciones-service** | **8082** | `.\scripts\run.ps1 -Id operaciones-up` o `./scripts/run.sh operaciones-up` |
+| 4 | **api-gateway** | **8080** | `.\scripts\run.ps1 -Id gateway-up` o `./scripts/run.sh gateway-up` |
 
 **vehiculos-service** usa variables **`VEHICULOS_DATASOURCE_*`** (o, si solo ese servicio, el fallback **`SPRING_DATASOURCE_*`** documentado en `application.yml`). **operaciones-service** usa **`OPERACIONES_DATASOURCE_*`** (otro proyecto Neón, ej. UNIR-BD-2-OPERACIONES). **No pongas `SPRING_DATASOURCE_*` junto con operaciones**: Spring Boot las interpreta como `spring.datasource` global y **`operaciones-service` ignoraría su URL** y hablaría con la misma BD que vehículos. En **Windows**, si `mvnw.cmd` pide Java, define también **`JAVA_HOME`** en ese mismo archivo (ver `env.local.example`).
 
-**URLs útiles:** `http://localhost:8761` (panel Eureka; con vehículos arriba aparece **VEHICULOS-SERVICE**), `http://localhost:8081/swagger-ui.html` (vehículos), `http://localhost:8081/actuator/health`, `http://localhost:8082/swagger-ui.html` (operaciones), `http://localhost:8082/actuator/health`.
+**URLs útiles:** `http://localhost:8761` (Eureka; con todo arriba: **VEHICULOS-SERVICE**, **OPERACIONES-SERVICE**, **API-GATEWAY**), `http://localhost:8080/actuator/health` (Gateway), `http://localhost:8081/swagger-ui.html` (vehículos), `http://localhost:8081/actuator/health`, `http://localhost:8082/swagger-ui.html` (operaciones), `http://localhost:8082/actuator/health`.
+
+**Entrada única (lote 7):** `http://localhost:8080/vehiculos` y `http://localhost:8080/operaciones/solicitudes` (equivalentes a `/api/...` en 8081/8082).
 
 Si **vehiculos-service** arranca **sin** Eureka en marcha, verás errores de conexión en el log hasta que levantes Eureka o desactives el cliente con variables propias; en desarrollo normal levanta primero Eureka y luego vehículos.
 
@@ -67,6 +72,40 @@ Misma carpeta `alquiler-vehiculos/`. En Windows conviene tener `JAVA_HOME` y las
 ./mvnw -pl operaciones-service spring-boot:run
 ```
 
+```bash
+./mvnw -pl api-gateway spring-boot:run
+```
+
+## Pruebas Postman vía Gateway (lote 7)
+
+**Prerrequisito:** los cuatro procesos en orden (Eureka → vehículos → operaciones → gateway). Cabecera `Content-Type: application/json` en los POST.
+
+| Qué | Método | URL |
+|-----|--------|-----|
+| Lista vehículos | GET | `http://localhost:8080/vehiculos` |
+| Vehículo por id | GET | `http://localhost:8080/vehiculos/{id}` |
+| Crear vehículo | POST | `http://localhost:8080/vehiculos` |
+| Lista solicitudes | GET | `http://localhost:8080/operaciones/solicitudes` |
+| Registrar solicitud | POST | `http://localhost:8080/operaciones/solicitudes` |
+| Health Gateway | GET | `http://localhost:8080/actuator/health` |
+
+**Cuerpo POST vehículo (ejemplo):** `marca`, `modelo`, `matricula`, `estado` (p. ej. `DISPONIBLE`), `precioPorDia` — mismo contrato que Swagger en `:8081`.
+
+**Cuerpo POST solicitud (ejemplo):** `{ "vehiculoId": 1, "fechaInicio": "2030-07-01", "fechaFin": "2030-07-05" }`.
+
+**Comparación:** la misma petición contra `http://localhost:8081/api/vehiculos` y `http://localhost:8080/vehiculos` debe dar el mismo código HTTP y cuerpo equivalente (idem operaciones con `/api/operaciones/...`).
+
+### Criterios de éxito (lote 7)
+
+1. `./mvnw -pl api-gateway test` → BUILD SUCCESS.
+2. En Eureka aparecen **tres** aplicaciones: vehículos, operaciones y **API-GATEWAY**.
+3. `GET http://localhost:8080/actuator/health` → `UP`.
+4. GET/POST vía `:8080/vehiculos...` y `:8080/operaciones...` equivalentes a llamadas directas a 8081/8082.
+5. Flujo end-to-end solo usando **8080** (crear vehículo DISPONIBLE → registrar solicitud) funciona.
+6. Los MS siguen respondiendo directo en 8081 y 8082.
+
+**Fallo típico:** Gateway antes que Eureka o sin instancias registradas → errores 503/502 o resolución `lb://` vacía.
+
 ## Comandos registrados (resumen)
 
 | ID | Qué hace |
@@ -78,6 +117,8 @@ Misma carpeta `alquiler-vehiculos/`. En Windows conviene tener `JAVA_HOME` y las
 | `compile-vehiculos` | Compila y ejecuta tests de `vehiculos-service` (H2 en perfil `test`). |
 | `operaciones-up` | Arranca **operaciones-service** en el puerto **8082** (BD `operaciones` u otra vía `OPERACIONES_DATASOURCE_*`). |
 | `compile-operaciones` | Compila y ejecuta tests de `operaciones-service` (H2 en perfil `test`). |
+| `gateway-up` | Arranca **api-gateway** en el puerto **8080** (requiere Eureka + MS registrados). |
+| `compile-gateway` | Compila y ejecuta tests de `api-gateway` (perfil `test`, Gateway desactivado en test). |
 | `verify-versions` | Muestra `mvnw -v` (Java + Maven del wrapper). |
 
 ## Cómo añadir un comando nuevo
@@ -113,3 +154,5 @@ En Linux/macOS, si ejecutas `mvnw` a mano sin `run.ps1`, puedes `export` las mis
 El **host** es el segmento entre `@` y la siguiente `/` en el URI de Neon (sin `postgresql://` ni usuario/contraseña). El nombre de la base suele ser `neondb` u otra que elijas en el panel.
 
 Si esa contraseña llegó a guardarse en un archivo versionado, **rótala** en [Neon Console](https://console.neon.tech) y actualiza solo `.env.local`.
+
+**Fallo al arrancar operaciones (o vehículos) con Neon:** si en el log aparece `ERROR: Control plane request failed` o Hibernate *Unable to determine Dialect without JDBC metadata*, casi siempre falló la conexión JDBC: revisa que **`OPERACIONES_DATASOURCE_PASSWORD`** (o la de vehículos) **no esté vacía** en `.env.local` (una línea `PASSWORD=` sin valor hace que Spring envíe contraseña vacía a Neon). Comprueba en el panel de Neon que el proyecto esté activo y que URL, usuario y contraseña coincidan con la conexión JDBC del branch correcto.

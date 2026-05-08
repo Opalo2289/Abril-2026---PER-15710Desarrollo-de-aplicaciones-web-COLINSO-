@@ -1,0 +1,50 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: vehiculos-root
+          order: 0
+          uri: lb://vehiculos-service
+          predicates:
+            - Path=/vehiculos
+          filters:
+            - SetPath=/api/vehiculos
+        - id: vehiculos-api
+          order: 1
+          uri: lb://vehiculos-service
+          predicates:
+            - Path=/vehiculos/**
+          filters:
+            - RewritePath=/vehiculos/(?<segment>.*), /api/vehiculos/$\{segment}
+        - id: operaciones-root
+          order: 0
+          uri: lb://operaciones-service
+          predicates:
+            - Path=/operaciones
+          filters:
+            - SetPath=/api/operaciones
+        - id: operaciones-api
+          order: 1
+          uri: lb://operaciones-service
+          predicates:
+            - Path=/operaciones/**
+          filters:
+            - RewritePath=/operaciones/(?<segment>.*), /api/operaciones/$\{segment}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

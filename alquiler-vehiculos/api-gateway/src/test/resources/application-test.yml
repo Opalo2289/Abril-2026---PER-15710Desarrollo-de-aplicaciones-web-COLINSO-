@@ -1,0 +1,9 @@
+# Tests sin Eureka ni enrutado reactivo completo: solo valida que el contexto arranca.
+spring:
+  cloud:
+    gateway:
+      enabled: false
+
+eureka:
+  client:
+    enabled: false
