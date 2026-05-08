@@ -30,7 +30,7 @@
     <modules>
         <module>eureka-server</module>
         <module>vehiculos-service</module>
-        <!-- lote 4: <module>operaciones-service</module> -->
+        <module>operaciones-service</module>
         <!-- lote 7: <module>api-gateway</module>         -->
     </modules>
 

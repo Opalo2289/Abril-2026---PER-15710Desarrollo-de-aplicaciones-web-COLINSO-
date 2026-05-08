@@ -42,6 +42,32 @@
       }
     },
     {
+      "id": "operaciones-up",
+      "title": "Arrancar operaciones-service (desarrollo, requiere PostgreSQL BD operaciones)",
+      "cwd": "..",
+      "windows": {
+        "program": "mvnw.cmd",
+        "args": ["-pl", "operaciones-service", "spring-boot:run"]
+      },
+      "unix": {
+        "program": "./mvnw",
+        "args": ["-pl", "operaciones-service", "spring-boot:run"]
+      }
+    },
+    {
+      "id": "compile-operaciones",
+      "title": "Compilar y test del módulo operaciones-service",
+      "cwd": "..",
+      "windows": {
+        "program": "mvnw.cmd",
+        "args": ["-pl", "operaciones-service", "test"]
+      },
+      "unix": {
+        "program": "./mvnw",
+        "args": ["-pl", "operaciones-service", "test"]
+      }
+    },
+    {
       "id": "compile-vehiculos",
       "title": "Compilar y test del módulo vehiculos-service",
       "cwd": "..",

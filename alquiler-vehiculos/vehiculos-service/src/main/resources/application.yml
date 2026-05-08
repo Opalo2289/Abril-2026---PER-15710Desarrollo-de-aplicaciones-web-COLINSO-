@@ -5,9 +5,11 @@ spring:
   application:
     name: vehiculos-service
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/vehiculos}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    # VEHICULOS_* evita conflicto si en la misma shell conviven variables con operaciones-service.
+    # No uses SPRING_DATASOURCE_* en .env cuando levantas los dos MS: sobreescribe el JDBC de ambos.
+    url: ${VEHICULOS_DATASOURCE_URL:${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/vehiculos}}
+    username: ${VEHICULOS_DATASOURCE_USERNAME:${SPRING_DATASOURCE_USERNAME:postgres}}
+    password: ${VEHICULOS_DATASOURCE_PASSWORD:${SPRING_DATASOURCE_PASSWORD:postgres}}
     driver-class-name: org.postgresql.Driver
   jpa:
     open-in-view: false
