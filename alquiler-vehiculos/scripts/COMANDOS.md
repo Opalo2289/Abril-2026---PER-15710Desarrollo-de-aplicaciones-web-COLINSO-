@@ -130,8 +130,34 @@ docker compose logs -f api-gateway
 docker compose down
 ```
 
+> Detiene y elimina contenedores pero **conserva los volúmenes** (`postgres-vehiculos-data`, `postgres-operaciones-data`). Los datos de BD persisten; el próximo `docker compose up` los recupera.
+
 ```bash
 docker compose down -v
+```
+
+> Elimina contenedores **y volúmenes**. La BD arranca vacía en el siguiente `up`. Usar solo si quieres resetear desde cero.
+
+### BD en Docker vs. Neon (desarrollo)
+
+Docker Compose levanta sus **propios PostgreSQL internos** (contenedores `postgres-vehiculos` y `postgres-operaciones`), completamente separados de Neon. Los datos que tengas en Neon no aparecen en Docker y viceversa.
+
+- En modo **desarrollo** (`run.ps1`): los microservicios conectan a Neon (o PostgreSQL local) según `scripts/.env.local`.
+- En modo **Docker Compose**: los microservicios conectan a los contenedores Postgres del stack; la BD arranca vacía la primera vez (o cuando hagas `down -v`).
+
+Para insertar datos de prueba tras `docker compose up`:
+
+```
+POST http://localhost:8080/vehiculos
+Content-Type: application/json
+
+{
+  "marca": "Toyota",
+  "modelo": "Corolla",
+  "matricula": "1234-ABC",
+  "estado": "DISPONIBLE",
+  "precioPorDia": 45.00
+}
 ```
 
 ### Servicios, puertos y variables clave
@@ -156,6 +182,11 @@ Puedes sobrescribir defaults desde variables de tu shell (ej. `POSTGRES_VEHICULO
 4. Verificar Gateway:
    - `GET http://localhost:8080/vehiculos`
    - `GET http://localhost:8080/operaciones/solicitudes`
+
+### Documentación y entrega (lote 9)
+
+- **[README del proyecto](../README.md)** — visión general, desarrollo local, Docker, pruebas.
+- **[Guía memoria PDF y checklist ZIP](../docs/memoria-entrega.md)** — apartados sugeridos (APA), qué incluir en el ZIP, qué no subir (secretos).
 
 ## Comandos registrados (resumen)
 

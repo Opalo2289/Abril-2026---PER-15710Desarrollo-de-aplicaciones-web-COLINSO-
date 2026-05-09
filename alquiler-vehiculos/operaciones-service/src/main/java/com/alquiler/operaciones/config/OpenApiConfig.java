@@ -13,7 +13,11 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("operaciones-service")
-                        .description("API REST de solicitudes de alquiler (UNIR PER-15710). Lote 4: disponibilidad de vehículos simulada (stub); sin Feign.")
+                        .description("""
+                                API REST de solicitudes de alquiler (UNIR PER-15710). \
+                                La disponibilidad del catálogo se consulta vía **Feign** al microservicio \
+                                `vehiculos-service`, resuelto por **Eureka** y Spring Cloud **LoadBalancer**. \
+                                Cada MS tiene su propia base de datos; no hay acceso JPA cruzado.""")
                         .version("1.0.0"));
     }
 }

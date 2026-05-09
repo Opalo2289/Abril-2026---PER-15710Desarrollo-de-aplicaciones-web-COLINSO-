@@ -48,7 +48,7 @@ public class SolicitudController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Registrar solicitud", description = "Crea en PENDIENTE. Valida solapes con otras solicitudes activas del mismo vehículo. "
-            + "La disponibilidad del catálogo de vehículos es simulada en el lote 4 (stub).")
+            + "Consulta el catálogo vía Feign a `vehiculos-service` (solo vehículos en estado DISPONIBLE).")
     public SolicitudResponse registrar(@Valid @RequestBody SolicitudRequest request) {
         return solicitudService.registrar(request);
     }
