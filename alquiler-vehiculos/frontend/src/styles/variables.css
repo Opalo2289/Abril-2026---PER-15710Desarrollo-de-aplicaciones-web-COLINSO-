@@ -1,0 +1,59 @@
+:root {
+  --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-size-base: 1rem;
+  --font-size-sm: 0.875rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.75rem;
+  --font-size-2xl: 2.25rem;
+
+  --color-primary: #1d4ed8;
+  --color-primary-hover: #1e40af;
+  --color-accent: #0d9488;
+  --color-bg: #f1f5f9;
+  --color-surface: #ffffff;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-border: #cbd5e1;
+
+  --color-success-bg: #ecfdf5;
+  --color-success-text: #065f46;
+  --color-success-border: #6ee7b7;
+  --color-error-bg: #fef2f2;
+  --color-error-text: #991b1b;
+  --color-error-border: #fca5a5;
+  --color-warning-bg: #fffbeb;
+  --color-warning-text: #92400e;
+
+  --estado-disponible-bg: #dcfce7;
+  --estado-disponible-text: #166534;
+  --estado-alquilado-bg: #dbeafe;
+  --estado-alquilado-text: #1e40af;
+  --estado-reservado-bg: #fef3c7;
+  --estado-reservado-text: #92400e;
+  --estado-mantenimiento-bg: #f3e8ff;
+  --estado-mantenimiento-text: #6b21a8;
+  --estado-pendiente-bg: #e0f2fe;
+  --estado-pendiente-text: #075985;
+  --estado-confirmada-bg: #dcfce7;
+  --estado-confirmada-text: #166534;
+  --estado-cancelada-bg: #fee2e2;
+  --estado-cancelada-text: #991b1b;
+
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 8%);
+  --shadow-md: 0 4px 12px rgb(15 23 42 / 10%);
+
+  --layout-max-width: 1200px;
+  --navbar-height: 4rem;
+
+  --transition-fast: 150ms ease;
+}

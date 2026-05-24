@@ -14,6 +14,8 @@ public interface SolicitudRepository extends JpaRepository<Solicitud, Long> {
 
     List<Solicitud> findByEstado(EstadoSolicitud estado);
 
+    void deleteByVehiculoId(Long vehiculoId);
+
     @Query("""
             SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END
             FROM Solicitud s

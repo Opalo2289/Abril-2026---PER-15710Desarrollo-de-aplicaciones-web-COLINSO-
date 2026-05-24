@@ -157,6 +157,32 @@
         "program": "docker",
         "args": ["compose", "down"]
       }
+    },
+    {
+      "id": "frontend-dev",
+      "title": "Arrancar frontend React (Vite dev server)",
+      "cwd": "../frontend",
+      "windows": {
+        "program": "npm",
+        "args": ["run", "dev"]
+      },
+      "unix": {
+        "program": "npm",
+        "args": ["run", "dev"]
+      }
+    },
+    {
+      "id": "frontend-build",
+      "title": "Compilar frontend React para producción",
+      "cwd": "../frontend",
+      "windows": {
+        "program": "npm",
+        "args": ["run", "build"]
+      },
+      "unix": {
+        "program": "npm",
+        "args": ["run", "build"]
+      }
     }
   ]
 }

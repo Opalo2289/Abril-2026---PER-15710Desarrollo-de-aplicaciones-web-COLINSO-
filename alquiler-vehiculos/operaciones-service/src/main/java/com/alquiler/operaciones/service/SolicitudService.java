@@ -71,6 +71,11 @@ public class SolicitudService {
     }
 
     @Transactional
+    public void eliminarPorVehiculoId(Long vehiculoId) {
+        solicitudRepository.deleteByVehiculoId(vehiculoId);
+    }
+
+    @Transactional
     public SolicitudResponse cancelar(Long id) {
         Solicitud s = solicitudRepository.findById(id).orElseThrow(() -> new SolicitudNotFoundException(id));
         if (s.getEstado() != EstadoSolicitud.PENDIENTE) {

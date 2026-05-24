@@ -1,5 +1,6 @@
 package com.alquiler.vehiculos.service;
 
+import com.alquiler.vehiculos.client.SolicitudesOperaciones;
 import com.alquiler.vehiculos.domain.EstadoVehiculo;
 import com.alquiler.vehiculos.domain.Vehiculo;
 import com.alquiler.vehiculos.repository.VehiculoRepository;
@@ -15,9 +16,11 @@ import java.util.List;
 public class VehiculoService {
 
     private final VehiculoRepository vehiculoRepository;
+    private final SolicitudesOperaciones solicitudesOperaciones;
 
-    public VehiculoService(VehiculoRepository vehiculoRepository) {
+    public VehiculoService(VehiculoRepository vehiculoRepository, SolicitudesOperaciones solicitudesOperaciones) {
         this.vehiculoRepository = vehiculoRepository;
+        this.solicitudesOperaciones = solicitudesOperaciones;
     }
 
     @Transactional(readOnly = true)
@@ -52,6 +55,7 @@ public class VehiculoService {
         if (!vehiculoRepository.existsById(id)) {
             throw new VehiculoNotFoundException(id);
         }
+        solicitudesOperaciones.eliminarPorVehiculoId(id);
         vehiculoRepository.deleteById(id);
     }
 

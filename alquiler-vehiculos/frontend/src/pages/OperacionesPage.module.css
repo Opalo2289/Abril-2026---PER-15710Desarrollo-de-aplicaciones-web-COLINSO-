@@ -1,0 +1,19 @@
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  max-width: 16rem;
+  margin-bottom: var(--space-lg);
+}
+
+.filter label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.filter select {
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}

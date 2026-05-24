@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -68,6 +69,30 @@ class SolicitudControllerTest {
                 .andExpect(status().isCreated());
         mockMvc.perform(post("/api/operaciones/solicitudes").contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void eliminarPorVehiculoBorraSolicitudes() throws Exception {
+        String body = """
+                {
+                  "vehiculoId": 99,
+                  "fechaInicio": "2030-07-01",
+                  "fechaFin": "2030-07-05"
+                }
+                """;
+        mockMvc.perform(post("/api/operaciones/solicitudes").contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/api/operaciones/solicitudes"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+
+        mockMvc.perform(delete("/api/operaciones/solicitudes/vehiculo/99"))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/api/operaciones/solicitudes"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
     }
 
     @Test

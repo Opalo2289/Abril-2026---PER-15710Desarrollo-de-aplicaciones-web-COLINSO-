@@ -1,0 +1,49 @@
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+}
+
+.default {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.disponible {
+  background: var(--estado-disponible-bg);
+  color: var(--estado-disponible-text);
+}
+
+.alquilado {
+  background: var(--estado-alquilado-bg);
+  color: var(--estado-alquilado-text);
+}
+
+.reservado {
+  background: var(--estado-reservado-bg);
+  color: var(--estado-reservado-text);
+}
+
+.mantenimiento {
+  background: var(--estado-mantenimiento-bg);
+  color: var(--estado-mantenimiento-text);
+}
+
+.pendiente {
+  background: var(--estado-pendiente-bg);
+  color: var(--estado-pendiente-text);
+}
+
+.confirmada {
+  background: var(--estado-confirmada-bg);
+  color: var(--estado-confirmada-text);
+}
+
+.cancelada {
+  background: var(--estado-cancelada-bg);
+  color: var(--estado-cancelada-text);
+}

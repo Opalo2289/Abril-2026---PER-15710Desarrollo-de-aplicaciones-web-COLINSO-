@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,5 +64,15 @@ public class SolicitudController {
     @Operation(summary = "Cancelar solicitud", description = "Pasa de PENDIENTE a CANCELADA.")
     public SolicitudResponse cancelar(@PathVariable Long id) {
         return solicitudService.cancelar(id);
+    }
+
+    @DeleteMapping("/vehiculo/{vehiculoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(
+            summary = "Eliminar solicitudes de un vehículo",
+            description = "Borra todas las solicitudes asociadas al vehiculoId indicado. "
+                    + "Lo invoca vehiculos-service al eliminar un vehículo del catálogo.")
+    public void eliminarPorVehiculo(@PathVariable Long vehiculoId) {
+        solicitudService.eliminarPorVehiculoId(vehiculoId);
     }
 }

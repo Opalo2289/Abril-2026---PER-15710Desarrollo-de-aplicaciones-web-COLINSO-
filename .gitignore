@@ -47,3 +47,10 @@ alquiler-vehiculos/scripts/.env.local
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ================================================================
+# Cursor Agent Skills (local; reinstalar con skills-lock.json)
+# ================================================================
+# skills-lock.json en la raíz SÍ puede versionarse (metadatos de origen/hash).
+# El contenido descargado de vercel-react-best-practices queda solo en local.
+.agents/skills/vercel-react-best-practices/
