@@ -1,0 +1,41 @@
+﻿Comando ejecutado (desde la raiz de alquiler-vehiculos/):
+semgrep scan --config=p/java --config=p/owasp-top-ten --config=p/security-audit --config=p/secrets .
+
+Fecha de ejecucion: 2026-08-25 19:16
+Version Semgrep: 1.174.0
+
+============================================================
+
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 67 files tracked by git with 725 Code rules:
+                                                                                                                        
+  Language      Rules   Files          Origin      Rules                                                                
+ ─────────────────────────────        ───────────────────                                                               
+  <multilang>      43      67          Community     725                                                                
+  java             86      35                                                                                           
+  yaml             24       9                                                                                           
+  dockerfile        4       4                                                                                           
+  json              3       2                                                                                           
+  bash              1       2                                                                                           
+                                                                                                                        
+                
+                
+┌──────────────┐
+│ Scan Summary │
+└──────────────┘
+✅ Scan completed successfully.
+ • Findings: 0 (0 blocking)
+ • Rules run: 161
+ • Targets scanned: 67
+ • Parsed lines: ~99.1%
+ • Scan skipped: 
+   ◦ Files matching .semgrepignore patterns: 8
+ • Scan was limited to files tracked by git
+ • For a detailed list of skipped files and lines, run semgrep with the --verbose flag
+Ran 161 rules on 67 files: 0 findings.
+(need more rules? `semgrep login` for additional free Semgrep Registry rules)
+
+If Semgrep missed a finding, please send us feedback to let us know!
+See https://semgrep.dev/docs/reporting-false-negatives/

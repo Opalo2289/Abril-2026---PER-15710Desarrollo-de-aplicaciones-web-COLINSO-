@@ -188,6 +188,35 @@ Puedes sobrescribir defaults desde variables de tu shell (ej. `POSTGRES_VEHICULO
 - **[README del proyecto](../README.md)** — visión general, desarrollo local, Docker, pruebas.
 - **[Guía memoria PDF y checklist ZIP](../docs/memoria-entrega.md)** — apartados sugeridos (APA), qué incluir en el ZIP, qué no subir (secretos).
 
+## Auditoría de código estático (Actividad 1 — PER-15710)
+
+El informe **[`docs/actividad1-auditoria-codigo.md`](../docs/actividad1-auditoria-codigo.md)** (y su versión `.docx`) documenta 15 hallazgos de seguridad. Dos ficheros en `docs/` son la **evidencia cruda** de la herramienta citada en ese informe, no texto redactado:
+
+- **`docs/semgrep-report.json`** — salida `--json` completa de Semgrep (formato SARIF-like, para procesar con cualquier lector de hallazgos).
+- **`docs/semgrep-report.txt`** — la misma ejecución en formato de consola, legible sin herramientas adicionales.
+
+### Cómo reproducirlo
+
+Requiere **Python 3 + pip** (Semgrep no es parte del proyecto Java, se instala aparte):
+
+```bash
+pip install --user semgrep
+```
+
+Luego, desde `alquiler-vehiculos/`:
+
+```powershell
+.\scripts\run.ps1 -Id security-audit
+```
+
+```bash
+./scripts/run.sh security-audit
+```
+
+Esto regenera `docs/semgrep-report.json` con el comando exacto documentado en la sección 3.1 del informe. Si `semgrep` no aparece en el `PATH` tras instalarlo con `--user` en Windows, agrega `%APPDATA%\Python\Python3xx\Scripts` a tu `PATH` de usuario (o usa `python -m semgrep` como alternativa).
+
+> **Nota:** el paquete de reglas `p/spring` fue retirado del registro público de Semgrep (HTTP 404) al momento de esta auditoría y por eso no aparece en el comando, aunque sí en versiones anteriores de este documento. Si al reproducirlo ves un recuento de reglas distinto a 161, es esperable: los *rulesets* remotos de Semgrep cambian con el tiempo.
+
 ## Comandos registrados (resumen)
 
 | ID | Qué hace |
